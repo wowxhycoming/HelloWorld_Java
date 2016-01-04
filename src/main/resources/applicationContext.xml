@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd 
+						http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+       					http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd 
+       					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- 扫描annotation -->
+	<context:component-scan base-package="com.wowxhycoming.*">
+		<!-- 排除Controller -->
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- spring配置文件中使用properties -->
+	<context:property-placeholder location="classpath:database.properties" />
+
+	<tx:annotation-driven />
+	
+	<bean id="abstractNonXADataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" 
+		init-method="init" destroy-method="close" abstract="true">
+		<property name="poolSize" value="10" />
+		<property name="minPoolSize" value="10"/>
+		<property name="maxPoolSize" value="30"/>
+		<property name="borrowConnectionTimeout" value="60"/>
+		<property name="reapTimeout" value="20"/>
+		<!-- 最大空闲时间 -->
+		<property name="maxIdleTime" value="60"/>
+		<property name="maintenanceInterval" value="60"/>
+		<property name="loginTimeout" value="60"/>
+		<property name="testQuery">
+		    <value>select 1 from dual</value>
+		</property>
+    </bean>
+    
+	<bean id="dataSource1" parent="abstractNonXADataSource">
+        <!-- value只要两个数据源不同就行，随便取名 -->
+        <property name="uniqueResourceName" value="test1" />
+        <property name="driverClassName">
+			<value>${oracle.test1.driverClassName}</value>
+		</property>
+        <property name="url">
+			<value>${oracle.test1.url}</value>
+		</property>
+		<property name="user">
+			<value>${oracle.test1.username}</value>
+		</property>
+		<property name="password">
+			<value>${oracle.test1.password}</value>
+		</property>
+    </bean>
+    
+	<bean id="dataSource2" parent="abstractNonXADataSource">
+        <!-- value只要两个数据源不同就行，随便取名 -->
+        <property name="uniqueResourceName" value="test2" />
+        <property name="driverClassName">
+			<value>${oracle.test2.driverClassName}</value>
+		</property>
+        <property name="url">
+			<value>${oracle.test2.url}</value>
+		</property>
+		<property name="user">
+			<value>${oracle.test2.username}</value>
+		</property>
+		<property name="password">
+			<value>${oracle.test2.password}</value>
+		</property>
+    </bean>
+    
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+          init-method="init" destroy-method="close">
+        <property name="forceShutdown">
+            <value>true</value>
+        </property>
+    </bean>
+    
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager">
+            <ref bean="atomikosTransactionManager"/>
+        </property>
+        <property name="userTransaction">
+            <ref bean="atomikosUserTransaction"/>
+        </property>
+        <!-- 必须设置，否则程序出现异常 JtaTransactionManager does not support custom isolation levels by default -->
+        <property name="allowCustomIsolationLevels" value="true"/>
+    </bean>
+
+	<!-- 配置 Spirng 的 JdbcTemplate -->
+	<bean id="jdbcTemplate1" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource1"></property>
+	</bean>
+	
+	<bean id="jdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource2"></property>
+	</bean>
+	
+
+
+</beans>

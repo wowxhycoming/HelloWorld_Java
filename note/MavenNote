@@ -1,0 +1,16 @@
+1.maven 安装jar包
+mvn install:install-file -Dfile=jar包的位置 -DgroupId=groupId -DartifactId=artifactId -Dversion=version -Dpackaging=jar
+
+如果pom文件中是这样定义
+<dependency>
+	<groupId>oracle</groupId>
+    <artifactId>ojdbc6</artifactId>
+    <version>6.0</version>
+</dependency>
+
+那么命令就是
+mvn install:install-file -Dfile=D:\DevSoftIns\.m2\ojdbc6.jar -DgroupId=oracle -DartifactId=ojdbc6 -Dversion=6.0 -Dpackaging=jar
+
+2.项目jar依赖分析 
+mvn dependency:tree
+

@@ -1,5 +1,4 @@
-.settings
-target
-.classpath
-.mymetadata
-.project
+/target
+/.classpath
+/.mymetadata
+/.project

@@ -4,6 +4,14 @@ package com.wowxhycoming.designPattern._2simpleFactory.example1;
  * 工厂类，用来创造Api对象
  */
 public class Factory {
+	
+	/**
+	 * 私有化工厂构造方法，方式客户端随意创建工厂（不需要工厂实例）
+	 */
+	private Factory() {
+	
+	}
+	
 	/**
 	 * 具体的创造Api对象的方法
 	 * @param condition 从外部传入的选择条件

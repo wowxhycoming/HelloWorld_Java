@@ -25,10 +25,19 @@ public class Factory {
 		// 使用条件
 		Api api = null;
 		if(condition == 1){
+			// 不要将ImplA的实现写到这里
+			// 简单工厂应该只负责选择，不负责具体实现；并且如果ImplA中有多个方法，在简单工厂中也是没办法进行的
 			api = new ImplA();
 		}else if(condition == 2){
 			api = new ImplB();
 		}
 		return api;
 	}
+	
+	// 可以扩展其他创建对象职责的方法
+	/*
+	public static Api createApi() {
+		return null;
+	}
+	*/
 }

@@ -11,7 +11,7 @@ import com.wowxhycoming.distributedTransaction.controller.User;
 public class UserRepositoryImpl1 implements UserRepository {
 	
 	@Autowired
-	@Qualifier("jdbcTemplate1")
+	@Qualifier("oracleXAJdbcTemplate1")
 	private JdbcTemplate jdbcTemplate;
 	
 	public int insert(User user){

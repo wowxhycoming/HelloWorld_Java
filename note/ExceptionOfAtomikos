@@ -1,0 +1,189 @@
+1.1. 发生如下问题
+===============================================================================================================================================================
+ERROR: the specified log seems to be in use already. Make sure that no other instance is running, or kill any pending process if needed.
+java.lang.RuntimeException: Log already in use?
+	at com.atomikos.icatch.standalone.UserTransactionServiceImp.createDefault(UserTransactionServiceImp.java:203)
+	at com.atomikos.icatch.standalone.UserTransactionServiceImp.init(UserTransactionServiceImp.java:258)
+	at com.atomikos.icatch.config.UserTransactionServiceImp.init(UserTransactionServiceImp.java:405)
+	at com.atomikos.icatch.config.UserTransactionServiceImp.init(UserTransactionServiceImp.java:569)
+	at com.atomikos.icatch.jta.UserTransactionManager.startupTransactionService(UserTransactionManager.java:89)
+
+	at com.atomikos.icatch.jta.UserTransactionManager.checkSetup(UserTransactionManager.java:77)
+	at com.atomikos.icatch.jta.UserTransactionManager.init(UserTransactionManager.java:142)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeCustomInitMethod(AbstractAutowireCapableBeanFactory.java:1706)
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1574)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:545)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:482)
+
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:306)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:302)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:772)
+
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:839)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:538)
+	at org.springframework.web.context.ContextLoader.configureAndRefreshWebApplicationContext(ContextLoader.java:446)
+	at org.springframework.web.context.ContextLoader.initWebApplicationContext(ContextLoader.java:328)
+	at org.springframework.web.context.ContextLoaderListener.contextInitialized(ContextLoaderListener.java:107)
+
+	at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4994)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5492)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:901)
+	at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:877)
+	at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:649)
+	at org.apache.catalina.startup.HostConfig.deployDirectory(HostConfig.java:1245)
+
+	at org.apache.catalina.startup.HostConfig$DeployDirectory.run(HostConfig.java:1895)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:441)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+	
+Caused by: java.lang.IllegalStateException: Can't overwrite cause
+	at java.lang.Throwable.initCause(Throwable.java:320)
+	at com.atomikos.icatch.standalone.UserTransactionServiceImp.init(UserTransactionServiceImp.java:326)
+	at com.atomikos.icatch.config.UserTransactionServiceImp.init(UserTransactionServiceImp.java:405)
+	at com.atomikos.icatch.config.UserTransactionServiceImp.init(UserTransactionServiceImp.java:569)
+	at com.atomikos.icatch.jta.UserTransactionManager.startupTransactionService(UserTransactionManager.java:89)
+	at com.atomikos.icatch.jta.UserTransactionManager.checkSetup(UserTransactionManager.java:77)
+	at com.atomikos.icatch.jta.UserTransactionManager.init(UserTransactionManager.java:142)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeCustomInitMethod(AbstractAutowireCapableBeanFactory.java:1706)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1574)
+	... 26 more
+===============================================================================================================================================================
+1.2. 问题原因 和 解决方案
+当你有超过一个项目(使用于Atomikos)部署,这问题发生由于并发写于Atomikos日志文件( 错误信息:日志已经在使用的 )。
+
+为了解决这个问题 你必须定制日志文件的名字 , 设置属性 “com.atomikos.icatch.log_base_name” 在于atomikos配置 如下例子:
+
+<bean id="atomikosUserTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp"
+      init-method="init" destroy-method="shutdownForce">
+    <constructor-arg>
+        <props>
+            <prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
+            <prop key="com.atomikos.icatch.log_base_name">your_project_name_log</prop>
+            <prop key="com.atomikos.icatch.output_dir">../standalone/log/</prop>
+            <prop key="com.atomikos.icatch.log_base_dir">../standalone/log/</prop>
+        </props>
+    </constructor-arg>
+</bean>
+
+======================================================
+
+
+2. 在使用 com.atomikos.jdbc.AtomikosDataSourceBean 时，需要xa连接池，启动包错： 
+	com.atomikos.datasource.ResourceException: Error in recovery 
+
+这主要是数据库账号权限问题引起的，解决方案如下：
+
+以sysdba登录数据库，给相应地用户赋予以下权限：
+
+grant select on sys.dba_pending_transactions to <数据库用户>;
+grant select on sys.pending_trans$ to <数据库用户>;
+grant select on sys.dba_2pc_pending to <数据库用户>;
+grant execute on sys.dbms_system to <数据库用户>;
+
+（PS:取消权限赋予 revoke ....  from test1;）
+在重新启动tomcat即可。
+
+XA驱动的spring配置
+
+	<!-- ========== 分布式事务数据源 start ========== -->
+	
+	<!-- 更改 atomikos 日志文件的位置， 放置多应用时同时写相同文件产生冲突  -->
+	<bean id="atomikosUserTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp"
+      init-method="init" destroy-method="shutdownForce">
+	    <constructor-arg>
+	        <props>
+	            <prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
+	            <prop key="com.atomikos.icatch.log_base_name">HelloWorld_Java_log</prop>
+	            <prop key="com.atomikos.icatch.output_dir">../atomikosLogs/</prop>
+	            <prop key="com.atomikos.icatch.log_base_dir">../atomikosLogs/</prop>
+	        </props>
+	    </constructor-arg>
+	</bean>
+	
+	<!-- 表示必须要用到XA数据库驱动类,可设置连接池(经过测试推荐此方法)  -->
+    <bean id="abstractOracleXADataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" 
+    	init-method="init" destroy-method="close" lazy-init="true">
+        <property name="xaDataSourceClassName" value="${oracle.xa.driverClassName}"/>
+        <property name="poolSize" value="1"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="borrowConnectionTimeout" value="60"/>
+		<property name="reapTimeout" value="30"/>
+		<property name="maxIdleTime" value="60"/>
+		<property name="maintenanceInterval" value="60"/>
+		<property name="loginTimeout" value="60"/>
+		<property name="testQuery">
+		    <value>select 1 from dual</value>
+		</property>
+    </bean>
+
+	<bean id="oracleXADataSource1" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource1" />
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn1.url}</prop>  
+                <prop key="user">${oracle.conn1.username}</prop>  
+                <prop key="password">${oracle.conn1.password}</prop>  
+            </props>  
+        </property>
+    </bean>
+    
+	<bean id="oracleXADataSource2" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource2" />
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn2.url}</prop>  
+                <prop key="user">${oracle.conn2.username}</prop>  
+                <prop key="password">${oracle.conn2.password}</prop>  
+            </props>  
+        </property>
+    </bean>
+    
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+          init-method="init" destroy-method="close">
+        <property name="forceShutdown">
+            <value>true</value>
+        </property>
+    </bean>
+    
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager">
+            <ref bean="atomikosTransactionManager"/>
+        </property>
+        <property name="userTransaction">
+            <ref bean="atomikosUserTransaction"/>
+        </property>
+        <!-- 必须设置，否则程序出现异常 JtaTransactionManager does not support custom isolation levels by default -->
+        <property name="allowCustomIsolationLevels" value="true"/>
+    </bean>
+
+	<!-- 配置 Spirng 的 JdbcTemplate -->
+	<bean id="oracleXAJdbcTemplate1" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource1"></property>
+	</bean>
+	
+	<bean id="oracleXAJdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource2"></property>
+	</bean>
+	<!-- ========== 分布式事务数据源 end ========== -->

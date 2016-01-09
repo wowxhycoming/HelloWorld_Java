@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
-	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
-						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
-						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
-						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd 
-						http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
-       					http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd 
-       					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd 
+						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd 
+       					http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.2.xsd 
+       					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+       					http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd 
+       					">
 
 	<!-- 扫描annotation -->
-	<context:component-scan base-package="com.wowxhycoming.*">
+	<context:component-scan base-package="com.wowxhycoming.*Transaction.*">
 		<!-- 排除Controller -->
 		<context:exclude-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
@@ -27,16 +32,16 @@
 	<!-- ========== 单数据源配置 start ========== -->
 	<bean id="singleDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 	    <!-- 基本属性 url、user、password -->
-	    <property name="url" value="${oracle.test1.url}" />
-	    <property name="username" value="${oracle.test1.username}" />
-	    <property name="password" value="${oracle.test1.password}" />
+	    <property name="url" value="${oracle.conn1.url}" />
+	    <property name="username" value="${oracle.conn1.username}" />
+	    <property name="password" value="${oracle.conn1.password}" />
 	      
 	    <!-- 配置初始化大小、最小、最大 -->
 	    <property name="initialSize" value="50" />
 	    <property name="minIdle" value="20" />
 	    <property name="maxActive" value="200" />
 	 
-	    <!-- 配置获取连接等待超时的时间 -->
+	    <!-- 配置获取连接等待超时的时间，单位是毫秒-->
 	    <property name="maxWait" value="60000" />
 	 
 	    <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
@@ -67,54 +72,56 @@
 	
 	
 	<!-- ========== 分布式事务数据源 start ========== -->
-	<bean id="abstractNonXADataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean"
-		init-method="init" destroy-method="close" abstract="true">
-		<property name="poolSize" value="10" />
-		<property name="minPoolSize" value="10"/>
-		<property name="maxPoolSize" value="30"/>
-		<property name="borrowConnectionTimeout" value="60"/>
-		<property name="reapTimeout" value="20"/>
-		<!-- 最大空闲时间 -->
+	
+	<!-- 更改 atomikos 日志文件的位置， 放置多应用时同时写相同文件产生冲突  -->
+	<bean id="atomikosUserTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp"
+      init-method="init" destroy-method="shutdownForce">
+	    <constructor-arg>
+	        <props>
+	            <prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
+	            <prop key="com.atomikos.icatch.log_base_name">HelloWorld_Java_log</prop>
+	            <prop key="com.atomikos.icatch.output_dir">../atomikosLogs/</prop>
+	            <prop key="com.atomikos.icatch.log_base_dir">../atomikosLogs/</prop>
+	        </props>
+	    </constructor-arg>
+	</bean>
+	
+	<!-- 表示必须要用到XA数据库驱动类,可设置连接池(经过测试推荐此方法)  -->
+    <bean id="abstractOracleXADataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" 
+    	init-method="init" destroy-method="close" lazy-init="true">
+        <property name="xaDataSourceClassName" value="${oracle.xa.driverClassName}"/>
+        <property name="minPoolSize" value="1"/>
+        <property name="maxPoolSize" value="5"/>
+		<property name="maintenanceInterval" value="240"/>
+        <property name="borrowConnectionTimeout" value="30"/>
+		<property name="reapTimeout" value="10"/>
 		<property name="maxIdleTime" value="60"/>
-		<property name="maintenanceInterval" value="60"/>
 		<property name="loginTimeout" value="60"/>
 		<property name="testQuery">
 		    <value>select 1 from dual</value>
 		</property>
     </bean>
-    
-	<bean id="dataSource1" parent="abstractNonXADataSource">
-        <!-- value只要两个数据源不同就行，随便取名 -->
-        <property name="uniqueResourceName" value="test1" />
-        <property name="driverClassName">
-			<value>${oracle.test1.driverClassName}</value>
-		</property>
-        <property name="url">
-			<value>${oracle.test1.url}</value>
-		</property>
-		<property name="user">
-			<value>${oracle.test1.username}</value>
-		</property>
-		<property name="password">
-			<value>${oracle.test1.password}</value>
-		</property>
+
+	<bean id="oracleXADataSource1" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource1" />
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn1.url}</prop>  
+                <prop key="user">${oracle.conn1.username}</prop>  
+                <prop key="password">${oracle.conn1.password}</prop>  
+            </props>  
+        </property>
     </bean>
     
-	<bean id="dataSource2" parent="abstractNonXADataSource">
-        <!-- value只要两个数据源不同就行，随便取名 -->
-        <property name="uniqueResourceName" value="test2" />
-        <property name="driverClassName">
-			<value>${oracle.test2.driverClassName}</value>
-		</property>
-        <property name="url">
-			<value>${oracle.test2.url}</value>
-		</property>
-		<property name="user">
-			<value>${oracle.test2.username}</value>
-		</property>
-		<property name="password">
-			<value>${oracle.test2.password}</value>
-		</property>
+	<bean id="oracleXADataSource2" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource2" />
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn2.url}</prop>  
+                <prop key="user">${oracle.conn2.username}</prop>  
+                <prop key="password">${oracle.conn2.password}</prop>  
+            </props>  
+        </property>
     </bean>
     
     <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
@@ -140,14 +147,14 @@
     </bean>
 
 	<!-- 配置 Spirng 的 JdbcTemplate -->
-	<bean id="jdbcTemplate1" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource1"></property>
+	<bean id="oracleXAJdbcTemplate1" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource1"></property>
 	</bean>
 	
-	<bean id="jdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource2"></property>
+	<bean id="oracleXAJdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource2"></property>
 	</bean>
-	<!-- ========== 分布式事务数据源 start ========== -->
+	<!-- ========== 分布式事务数据源 end ========== -->
 	
 
 

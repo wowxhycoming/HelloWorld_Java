@@ -18,7 +18,7 @@
        					">
 
 	<!-- 扫描annotation -->
-	<context:component-scan base-package="com.wowxhycoming.*Transaction.*">
+	<context:component-scan base-package="com.wowxhycoming.*">
 		<!-- 排除Controller -->
 		<context:exclude-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
@@ -92,10 +92,16 @@
         <property name="xaDataSourceClassName" value="${oracle.xa.driverClassName}"/>
         <property name="minPoolSize" value="1"/>
         <property name="maxPoolSize" value="5"/>
+        <!-- 连接回收时间 -->
 		<property name="maintenanceInterval" value="240"/>
+		<!-- 连接最大存活时间，超过这个且没有正在使用的连接将自动销毁,0无限制，对于一些会自动中断连接的数据库如mysql，
+			可以设置这个参数，在达到这个时间的时候会自动关闭连接，下次数据库调用的时候就会新建-->
+		<!-- <property name="maxLifetime" value="240"/> -->
+		<!-- 获取连接失败重新获等待最大时间 -->
         <property name="borrowConnectionTimeout" value="30"/>
-		<property name="reapTimeout" value="10"/>
-		<property name="maxIdleTime" value="60"/>
+        <!-- 最大获取数据时间，那么在处理大批量数据读取的时候，一旦超过设置的时间，就会抛出类似 Resultset is close 的错误.-->
+		<property name="reapTimeout" value="61"/>
+		<property name="maxIdleTime" value="240"/>
 		<property name="loginTimeout" value="60"/>
 		<property name="testQuery">
 		    <value>select 1 from dual</value>
@@ -103,12 +109,12 @@
     </bean>
 
 	<bean id="oracleXADataSource1" parent="abstractOracleXADataSource">
-        <property name="uniqueResourceName" value="oracleXADataSource1" />
+        <property name="uniqueResourceName" value="oracleXADataSource1"/>
 		<property name="xaProperties">
             <props>  
-                <prop key="URL">${oracle.conn1.url}</prop>  
-                <prop key="user">${oracle.conn1.username}</prop>  
-                <prop key="password">${oracle.conn1.password}</prop>  
+                <prop key="URL">${oracle.conn1.url}</prop>
+                <prop key="user">${oracle.conn1.username}</prop>
+                <prop key="password">${oracle.conn1.password}</prop>
             </props>  
         </property>
     </bean>

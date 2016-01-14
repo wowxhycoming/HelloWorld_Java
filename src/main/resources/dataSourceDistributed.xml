@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd 
+						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd 
+       					http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.2.xsd 
+       					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+       					http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd 
+       					">
+
+	<!-- 更改 atomikos 日志文件的位置， 放置多应用时同时写相同文件产生冲突  -->
+	<bean id="atomikosUserTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp"
+      init-method="init" destroy-method="shutdownForce">
+	    <constructor-arg>
+	        <props>
+	            <prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
+	            <prop key="com.atomikos.icatch.log_base_name">HelloWorld_Java_log</prop>
+	            <prop key="com.atomikos.icatch.output_dir">../atomikosLogs/</prop>
+	            <prop key="com.atomikos.icatch.log_base_dir">../atomikosLogs/</prop>
+	        </props>
+	    </constructor-arg>
+	</bean>
+	
+	<!-- 表示必须要用到XA数据库驱动类,可设置连接池(经过测试推荐此方法)  -->
+    <bean id="abstractOracleXADataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" 
+    	init-method="init" destroy-method="close" lazy-init="true">
+        <property name="xaDataSourceClassName" value="${oracle.xa.driverClassName}"/>
+        <property name="minPoolSize" value="1"/>
+        <property name="maxPoolSize" value="5"/>
+        <!-- 连接回收时间 -->
+		<property name="maintenanceInterval" value="240"/>
+		<!-- 连接最大存活时间，超过这个且没有正在使用的连接将自动销毁,0无限制，对于一些会自动中断连接的数据库如mysql，
+			可以设置这个参数，在达到这个时间的时候会自动关闭连接，下次数据库调用的时候就会新建-->
+		<!-- <property name="maxLifetime" value="240"/> -->
+		<!-- 获取连接失败重新获等待最大时间 -->
+        <property name="borrowConnectionTimeout" value="30"/>
+        <!-- 最大获取数据时间，那么在处理大批量数据读取的时候，一旦超过设置的时间，就会抛出类似 Resultset is close 的错误.-->
+		<property name="reapTimeout" value="61"/>
+		<property name="maxIdleTime" value="240"/>
+		<property name="loginTimeout" value="60"/>
+		<property name="testQuery">
+		    <value>select 1 from dual</value>
+		</property>
+    </bean>
+
+	<bean id="oracleXADataSource1" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource1"/>
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn1.url}</prop>
+                <prop key="user">${oracle.conn1.username}</prop>
+                <prop key="password">${oracle.conn1.password}</prop>
+            </props>  
+        </property>
+    </bean>
+    
+	<bean id="oracleXADataSource2" parent="abstractOracleXADataSource">
+        <property name="uniqueResourceName" value="oracleXADataSource2" />
+		<property name="xaProperties">
+            <props>  
+                <prop key="URL">${oracle.conn2.url}</prop>  
+                <prop key="user">${oracle.conn2.username}</prop>  
+                <prop key="password">${oracle.conn2.password}</prop>  
+            </props>  
+        </property>
+    </bean>
+    
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+          init-method="init" destroy-method="close">
+        <property name="forceShutdown">
+            <value>true</value>
+        </property>
+    </bean>
+    
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager">
+            <ref bean="atomikosTransactionManager"/>
+        </property>
+        <property name="userTransaction">
+            <ref bean="atomikosUserTransaction"/>
+        </property>
+        <!-- 必须设置，否则程序出现异常 JtaTransactionManager does not support custom isolation levels by default -->
+        <property name="allowCustomIsolationLevels" value="true"/>
+    </bean>
+
+	<!-- 配置 Spirng 的 JdbcTemplate -->
+	<bean id="oracleXAJdbcTemplate1" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource1"></property>
+	</bean>
+	
+	<bean id="oracleXAJdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="oracleXADataSource2"></property>
+	</bean>
+
+
+</beans>

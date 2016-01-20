@@ -12,9 +12,9 @@
 
 	<!-- 启动扫描所有的controller -->
 	<!-- 单 数据源 -->
-	<context:component-scan base-package="com.wowxhycoming.transactionSingle" />
+	<!-- <context:component-scan base-package="com.wowxhycoming.transactionSingle" /> -->
 	<!-- 多 数据源 -->
-	<!-- <context:component-scan base-package="com.wowxhycoming.transactionDistributed" /> -->
+	<context:component-scan base-package="com.wowxhycoming.transactionDistributed" />
 	
 	<!-- 使用默认的Servlet处理静态文件 -->
 	<mvc:default-servlet-handler />

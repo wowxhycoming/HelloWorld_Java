@@ -24,8 +24,8 @@
 	<tx:annotation-driven />
 	
 	<!-- 单一      数据源配置信息 -->
-	<import resource="classpath:dataSourceSingle.xml" />
+	<!-- <import resource="classpath:dataSourceSingle.xml" /> -->
 	<!-- 分布式 数据源配置信息 -->
-	<!-- <import resource="classpath:dataSourceDistributed.xml" /> -->
+	<import resource="classpath:dataSourceDistributed.xml" />
 
 </beans>

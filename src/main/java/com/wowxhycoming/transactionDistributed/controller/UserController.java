@@ -46,9 +46,11 @@ public class UserController {
 	@RequestMapping(value="/insert",method=RequestMethod.GET)
 	public String gotoInsert(Model model) {
 		
+		System.out.println(1);
+		
 		model.addAttribute(new User());
 		
-		return "user/user_insert";
+		return "user/insert";
 	}
 	
 	@RequestMapping(value="/insert",method=RequestMethod.POST)

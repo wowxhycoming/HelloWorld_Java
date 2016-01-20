@@ -19,20 +19,21 @@ public class UserRepositoryImpl2 implements UserRepository {
 	@Qualifier("oracleXAJdbcTemplate2")
 	private JdbcTemplate jdbcTemplate;
 	
-	public int insert(User user){
+	public int insert(final User user){
 		
 		System.out.println(jdbcTemplate);
 		int ret;
-		
-		ret = jdbcTemplate.update("insert into user2 values (?, ?)",
+
+		ret = jdbcTemplate.update("insert into test_user2 values (?, ?)",
 				new PreparedStatementSetter() {
-				    @Override  
-				    public void setValues(PreparedStatement pstmt) throws SQLException {
-				        pstmt.setObject(1, 2);
-				        pstmt.setObject(2, 2);
-				    }
-			    });
-		
+					@Override
+					public void setValues(PreparedStatement pstmt) throws SQLException {
+						pstmt.setObject(1, user.getName());
+						pstmt.setObject(2, user.getAge());
+					}
+				});
+
+
 //		if(ret ==1 ) throw new RuntimeException();
 		return ret;
 		

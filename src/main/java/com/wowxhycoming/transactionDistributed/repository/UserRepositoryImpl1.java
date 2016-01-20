@@ -18,10 +18,8 @@ public class UserRepositoryImpl1 implements UserRepository {
 		
 		System.out.println(jdbcTemplate);
 		int ret;
-		
-		ret = jdbcTemplate.update("insert into user1 values (1,'tom')");
-		
-//		ret = jdbcTemplate2.update("insert into user2 values (2, 2)");
+
+		ret = jdbcTemplate.update("insert into test_user1 values ('"+user.getName()+"',"+user.getAge()+")");
 		
 		return ret;
 		

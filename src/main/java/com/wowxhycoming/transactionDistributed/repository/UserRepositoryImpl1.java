@@ -1,11 +1,11 @@
-package com.wowxhycoming.distributedTransaction.repository;
+package com.wowxhycoming.transactionDistributed.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.wowxhycoming.distributedTransaction.controller.User;
+import com.wowxhycoming.commonBean.User;
 
 @Repository
 public class UserRepositoryImpl1 implements UserRepository {

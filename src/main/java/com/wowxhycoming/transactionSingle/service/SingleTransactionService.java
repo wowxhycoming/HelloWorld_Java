@@ -1,4 +1,4 @@
-package com.wowxhycoming.singleTransaction.service;
+package com.wowxhycoming.transactionSingle.service;
 
 //@Service
 public interface SingleTransactionService {

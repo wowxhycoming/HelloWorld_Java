@@ -1,4 +1,4 @@
-package com.wowxhycoming.distributedTransaction.repository;
+package com.wowxhycoming.transactionDistributed.repository;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
-import com.wowxhycoming.distributedTransaction.controller.User;
+import com.wowxhycoming.commonBean.User;
 
 @Repository
 public class UserRepositoryImpl2 implements UserRepository {

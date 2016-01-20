@@ -1,4 +1,4 @@
-package com.wowxhycoming.singleTransaction.repository;
+package com.wowxhycoming.transactionSingle.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,4 +1,4 @@
-package com.wowxhycoming.distributedTransaction.controller;
+package com.wowxhycoming.commonBean;
 
 public class User {
 	

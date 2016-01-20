@@ -1,8 +1,8 @@
-package com.wowxhycoming.distributedTransaction.server;
+package com.wowxhycoming.transactionDistributed.service;
 
 import org.springframework.stereotype.Service;
 
-import com.wowxhycoming.distributedTransaction.controller.User;
+import com.wowxhycoming.commonBean.User;
 
 //@Service
 public interface UserService {

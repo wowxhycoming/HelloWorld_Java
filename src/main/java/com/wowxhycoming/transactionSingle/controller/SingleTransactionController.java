@@ -1,4 +1,4 @@
-package com.wowxhycoming.singleTransaction.controller;
+package com.wowxhycoming.transactionSingle.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.wowxhycoming.singleTransaction.service.SingleTransactionService;
+import com.wowxhycoming.transactionSingle.service.SingleTransactionService;
 
 @Controller
 @RequestMapping("/singleTransaction")

@@ -16,6 +16,9 @@
        					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
        					http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd 
        					">
+       					
+	<context:component-scan base-package="com.wowxhycoming.transactionSingle.*">
+	</context:component-scan>
 
 	<bean id="singleDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 	    <!-- 基本属性 url、user、password -->

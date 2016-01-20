@@ -1,12 +1,12 @@
-package com.wowxhycoming.distributedTransaction.server;
+package com.wowxhycoming.transactionDistributed.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wowxhycoming.distributedTransaction.controller.User;
-import com.wowxhycoming.distributedTransaction.repository.UserRepository;
+import com.wowxhycoming.commonBean.User;
+import com.wowxhycoming.transactionDistributed.repository.UserRepository;
 
 @Service
 public class UserServiceImpl1 implements UserService {

@@ -1,8 +1,8 @@
-package com.wowxhycoming.distributedTransaction.repository;
+package com.wowxhycoming.transactionDistributed.repository;
 
 import org.springframework.stereotype.Repository;
 
-import com.wowxhycoming.distributedTransaction.controller.User;
+import com.wowxhycoming.commonBean.User;
 
 public interface UserRepository {
 	

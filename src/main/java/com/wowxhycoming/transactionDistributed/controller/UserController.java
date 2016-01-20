@@ -1,4 +1,4 @@
-package com.wowxhycoming.distributedTransaction.controller;
+package com.wowxhycoming.transactionDistributed.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.wowxhycoming.distributedTransaction.server.UserService;
-import com.wowxhycoming.distributedTransaction.server.UserServiceImpl;
+import com.wowxhycoming.commonBean.User;
+import com.wowxhycoming.transactionDistributed.service.UserService;
+import com.wowxhycoming.transactionDistributed.service.UserServiceImpl;
 
 @Controller
 @RequestMapping("/user")

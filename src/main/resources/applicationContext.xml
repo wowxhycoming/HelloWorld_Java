@@ -16,22 +16,16 @@
        					http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
        					http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd 
        					">
-
-	<!-- 扫描annotation -->
-	<context:component-scan base-package="com.wowxhycoming.*">
-		<!-- 排除Controller -->
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Controller" />
-	</context:component-scan>
+       					
 
 	<!-- spring配置文件中使用properties -->
-	<context:property-placeholder location="classpath:database.properties" />
+	<context:property-placeholder location="classpath:database_zhx.properties" />
 
 	<tx:annotation-driven />
 	
 	<!-- 单一      数据源配置信息 -->
 	<import resource="classpath:dataSourceSingle.xml" />
 	<!-- 分布式 数据源配置信息 -->
-	<import resource="classpath:dataSourceDistributed.xml" />
+	<!-- <import resource="classpath:dataSourceDistributed.xml" /> -->
 
 </beans>

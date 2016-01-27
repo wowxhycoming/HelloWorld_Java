@@ -1,5 +1,6 @@
 package com.wowxhycoming.transactionSingle.service;
 
+import com.wowxhycoming.commonBean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,9 @@ public class SingleTransactionServiceImpl implements SingleTransactionService {
 	
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public int insert(){
+	public int insert(User user){
 		
-		return singleTransactionRepository.insert();
+		return singleTransactionRepository.insert(user);
 		
 	}
 }

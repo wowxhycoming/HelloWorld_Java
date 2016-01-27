@@ -1,5 +1,6 @@
 package com.wowxhycoming.transactionSingle.repository;
 
+import com.wowxhycoming.commonBean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,8 +13,8 @@ public class SingleTransactionRepository {
 	@Qualifier("singleJdbcTemplate")
 	private JdbcTemplate jdbcTemplate;
 	
-	public int insert() {
-		return jdbcTemplate.update("insert into user1 values (1,'tom')");
+	public int insert(User user) {
+		return jdbcTemplate.update("insert into test_user1 values ('"+user.getName()+"',"+user.getAge()+")");
 	}
 
 }

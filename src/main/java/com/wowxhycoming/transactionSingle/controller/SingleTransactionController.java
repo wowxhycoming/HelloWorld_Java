@@ -1,5 +1,6 @@
 package com.wowxhycoming.transactionSingle.controller;
 
+import com.wowxhycoming.commonBean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,17 +19,13 @@ public class SingleTransactionController {
 	
 	@RequestMapping(value="/insert",method=RequestMethod.GET)
 	public String gotoInsert(Model model) {
-		
-		singleTransactionService.insert();
-		
-		return "user/user_insert";
+		model.addAttribute(new User());
+		return "user/insert";
 	}
 	
 	@RequestMapping(value="/insert",method=RequestMethod.POST)
-	public String insert() {
-		
-		System.out.println();
-		
+	public String insert(User user) {
+		singleTransactionService.insert(user);
 		return "user/list";
 	}
 }

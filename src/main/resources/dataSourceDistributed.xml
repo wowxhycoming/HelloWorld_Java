@@ -43,7 +43,7 @@
 		<property name="maintenanceInterval" value="240"/>
 		<!-- 连接最大存活时间，超过这个且没有正在使用的连接将自动销毁,0无限制，对于一些会自动中断连接的数据库如mysql，
 			可以设置这个参数，在达到这个时间的时候会自动关闭连接，下次数据库调用的时候就会新建-->
-		<!-- <property name="maxLifetime" value="240"/> -->
+		<property name="maxLifetime" value="300"/>
 		<!-- 获取连接失败重新获等待最大时间 -->
         <property name="borrowConnectionTimeout" value="30"/>
         <!-- 最大获取数据时间，那么在处理大批量数据读取的时候，一旦超过设置的时间，就会抛出类似 Resultset is close 的错误.-->

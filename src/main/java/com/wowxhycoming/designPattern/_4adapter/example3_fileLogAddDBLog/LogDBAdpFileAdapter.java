@@ -9,8 +9,6 @@ public class LogDBAdpFileAdapter extends LogDBOpDefaultAdapter {
 	 */
 	private LogFileOperateInterf adaptee;
 	
-	private TimeUtil adaptee2 = null;
-
 	/**
 	 * 构造方法，传入需要被适配的对象
 	 * @param adaptee 需要被适配的对象

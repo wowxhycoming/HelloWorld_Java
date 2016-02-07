@@ -6,7 +6,7 @@ import java.util.List;
  * 适配器对象，把记录日志到文件的功能适配成第二版需要的增删改查的功能
  */
 public class Adapter implements LogDBOperateInterf{
-	//优先使用对象组合，而不是使用对象继承
+	//优先使用对象组合（持有对象），而不是使用对象继承
 	
 	/**
 	 * 持有需要被适配的接口对象

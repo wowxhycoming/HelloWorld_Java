@@ -18,9 +18,9 @@ public class LogFileOperateImpl implements LogFileOperateInterf{
 			log = new LogModel();
 			String value = String.valueOf(i);
 			log.setLogId(value);
-			log.setLogContent("日志内容：" + value);
+			log.setLogContent("LogFileOperateImpl日志内容：" + value);
 			log.setOperateTime((new Date()).toString());
-			log.setOperateUser("日志操作人：" + value);
+			log.setOperateUser("LogFileOperateImpl日志操作人：" + value);
 			
 			list.add(log);
 		}

@@ -34,9 +34,9 @@ public class LogDBOperateImpl implements LogDBOperateInterf{
 			log = new LogModel();
 			String value = String.valueOf(i);
 			log.setLogId(value);
-			log.setLogContent("日志内容：" + value);
+			log.setLogContent("LogDBOperateImpl日志内容：" + value);
 			log.setOperateTime((new Date()).toString());
-			log.setOperateUser("日志操作人：" + value);
+			log.setOperateUser("LogDBOperateImpl日志操作人：" + value);
 			
 			list.add(log);
 		}

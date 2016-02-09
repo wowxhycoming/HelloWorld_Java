@@ -14,7 +14,7 @@ public class Client {
 		
 		List<LogModel> list = new ArrayList<LogModel>();
 		list.add(log);
-
+		
 		// 创建操作日志文件的对象
 		LogFileOperateInterf logFileOpI = new LogFileOperateImpl();
 		// 创建操作日志DB的对象

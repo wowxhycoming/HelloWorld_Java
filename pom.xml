@@ -114,6 +114,12 @@
 			+- com.fasterxml.jackson.core:jackson-databind:jar:2.4.0:compile | 
 			+- com.fasterxml.jackson.core:jackson-annotations:jar:2.4.0:compile | \- 
 			com.fasterxml.jackson.core:jackson-core:jar:2.4.0:compile -->
+			
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
 
 		<dependency>
 		    <groupId>com.google.guava</groupId>
@@ -135,8 +141,8 @@
 
 		<dependency>
 			<groupId>oracle</groupId>
-			<artifactId>ojdbc14</artifactId>
-			<version>14.0</version>
+			<artifactId>ojdbc6</artifactId>
+			<version>6.0</version>
 		</dependency>
 
 	</dependencies>

@@ -45,20 +45,29 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 /**
+ * 
  * HttpClient工具类
  * 
- * @return
- * @author SHANHY
- * @create 2015年12月18日
+ * 目前只使用与单点，以为只能对第一次传入的host进行设置
  */
 public class HttpClientUtil {
 
-    static final int timeOut = 10 * 1000;
+	private static CloseableHttpClient httpClient = null;
 
-    private static CloseableHttpClient httpClient = null;
+	private final static Object syncLock = new Object();
 
-    private final static Object syncLock = new Object();
-
+	static final int timeOut = 10 * 1000;
+    
+    private static final int MAXTOTAL = 200;
+    private static final int MAXPERROUTE = 40;
+    private static final int MAXROUTE = 100;
+    
+    private static final RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(timeOut)
+            .setConnectTimeout(timeOut)
+            .setSocketTimeout(timeOut).build();
+    
+    
     private static void config(HttpRequestBase httpRequestBase) {
         // 设置Header等
         // httpRequestBase.setHeader("User-Agent", "Mozilla/5.0");
@@ -73,7 +82,8 @@ public class HttpClientUtil {
         // 配置请求的超时设置
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(timeOut)
-                .setConnectTimeout(timeOut).setSocketTimeout(timeOut).build();
+                .setConnectTimeout(timeOut)
+                .setSocketTimeout(timeOut).build();
         httpRequestBase.setConfig(requestConfig);
     }
 
@@ -95,7 +105,7 @@ public class HttpClientUtil {
         if (httpClient == null) {
             synchronized (syncLock) {
                 if (httpClient == null) {
-                    httpClient = createHttpClient(2, 40, 100, hostname, port);
+                    httpClient = createHttpClient(200, 40, 100, hostname, port);
                 }
             }
         }
@@ -197,7 +207,8 @@ public class HttpClientUtil {
      */
     public static String post(String url, Map<String, Object> params) throws Exception {
         HttpPost httppost = new HttpPost(url);
-        config(httppost);
+//        config(httppost);
+        httppost.setConfig(requestConfig);
         setPostParams(httppost, params);
         CloseableHttpResponse response = null;
         try {
@@ -230,7 +241,8 @@ public class HttpClientUtil {
      */
     public static String get(String url) {
         HttpGet httpget = new HttpGet(url);
-        config(httpget);
+//        config(httpget);
+        httpget.setConfig(requestConfig);
         CloseableHttpResponse response = null;
         try {
             response = getHttpClient(url).execute(httpget,
@@ -252,38 +264,40 @@ public class HttpClientUtil {
         return null;
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         // URL列表数组
         String[] urisToGet = {
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
+        		"http://free0007.iteye.com/blog/2012308",
+        		
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
 
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
 
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
 
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
 
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
 
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497",
-                "http://blog.csdn.net/catoop/article/details/38849497" };
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com",
+                "http://www.baidu.com" };
 
         long start = System.currentTimeMillis();
         try {
@@ -322,7 +336,7 @@ public class HttpClientUtil {
         @Override
         public void run() {
             try {
-                System.out.println(HttpClientUtil.get(url));
+                System.out.println(HttpClientUtil.get(url).substring(0, 100));
             } finally {
                 countDownLatch.countDown();
             }
